@@ -69,6 +69,11 @@ class BasicDataset(Dataset):
         img = self.preprocess(img, self.scale, is_mask=False)
         mask = self.preprocess(mask, self.scale, is_mask=True)
 
+        #changing mask values
+        mask = np.where(mask == 127,1,mask)
+        mask = np.where(mask == 255,2,mask)
+        print(img.shape)
+
         return {
             'image': torch.as_tensor(img.copy()).float().contiguous(),
             'mask': torch.as_tensor(mask.copy()).long().contiguous()
