@@ -19,7 +19,7 @@ from unet import UNet
 
 dir_img = Path('/content/drive/MyDrive/U-net data/imgs')
 dir_mask = Path('/content/drive/MyDrive/U-net data/masks')
-dir_checkpoint = Path('/content/')
+dir_checkpoint = Path('/content/drive/MyDrive/U-net data/Checkpoints')
 
 
 
