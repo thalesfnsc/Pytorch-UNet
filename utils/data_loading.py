@@ -18,6 +18,21 @@ class BasicDataset(Dataset):
         self.mask_suffix = mask_suffix
 
         self.ids = [splitext(file)[0] for file in listdir(images_dir) if not file.startswith('.')]
+        print(self.ids)
+        print(len(self.ids))
+        teste = self.ids.copy()
+        
+        ###
+        for i in self.ids:
+          if "Coffee" in i:
+            self.ids.remove(i)
+        ###
+
+        print(len(self.ids))
+        print(self.ids)
+
+        print(len(list(set(teste)  - set(self.ids))))
+
         if not self.ids:
             raise RuntimeError(f'No input file found in {images_dir}, make sure you put your images there')
         logging.info(f'Creating dataset with {len(self.ids)} examples')
@@ -63,17 +78,25 @@ class BasicDataset(Dataset):
         mask = self.load(mask_file[0])
         img = self.load(img_file[0])
 
-        assert img.size == mask.size, \
-            f'Image and mask {name} should be the same size, but are {img.size} and {mask.size}'
+
 
         img = self.preprocess(img, self.scale, is_mask=False)
         mask = self.preprocess(mask, self.scale, is_mask=True)
+ 
+        if(mask.shape != img.shape[1:]):
+          mask = mask.T
+       
+        assert img.shape[1:] == mask.shape, \
+            f'Image and mask {name} should be the same size, but are {img.shape[1:]} and {mask.shape}'
 
+        #print("mask shape:",mask.shape)
+        #print("img shape:", img.shape)
+        
         #changing mask values
         mask = np.where(mask == 127,1,mask)
         mask = np.where(mask == 255,2,mask)
-        print(img.shape)
-
+        #print(img.shape)
+        
         return {
             'image': torch.as_tensor(img.copy()).float().contiguous(),
             'mask': torch.as_tensor(mask.copy()).long().contiguous()
