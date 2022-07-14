@@ -18,20 +18,17 @@ class BasicDataset(Dataset):
         self.mask_suffix = mask_suffix
 
         self.ids = [splitext(file)[0] for file in listdir(images_dir) if not file.startswith('.')]
-        print(self.ids)
-        print(len(self.ids))
-        teste = self.ids.copy()
         
         ###
         for i in self.ids:
-          if "Coffee" in i:
+          if 'Coffee' in i:
             self.ids.remove(i)
-        ###
-
-        print(len(self.ids))
-        print(self.ids)
-
-        print(len(list(set(teste)  - set(self.ids))))
+        ###       
+        for i in self.ids:
+          if 'Coffee_1' in i:
+            self.ids.remove(i)
+       
+  
 
         if not self.ids:
             raise RuntimeError(f'No input file found in {images_dir}, make sure you put your images there')
