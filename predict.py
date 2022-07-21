@@ -112,5 +112,5 @@ if __name__ == '__main__':
         if args.viz:
             logging.info(f'Visualizing results for image {filename}, close to continue...')
             mask = mask_to_image(mask)
-            mask.save(f'/content/drive/MyDrive/U-net/Predict/Mask predict/mask{args.iterator}.png')
+            mask.save(f'/content/drive/MyDrive/U-net/Predict/Mask predict/{args.iterator}_pred.png')
             #plot_img_and_mask(img, mask)
