@@ -77,15 +77,18 @@ class BasicDataset(Dataset):
 
 
 
-        img = self.preprocess(img, self.scale, is_mask=False)
-        mask = self.preprocess(mask, self.scale, is_mask=True)
- 
+
+        '''
         if(mask.shape != img.shape[1:]):
           mask = mask.T
-       
-        assert img.shape[1:] == mask.shape, \
-            f'Image and mask {name} should be the same size, but are {img.shape[1:]} and {mask.shape}'
+        '''
 
+        assert img.size== mask.size, \
+            f'Image and mask {name} should be the same size, but are {img.size} and {mask.size}'
+
+        img = self.preprocess(img, self.scale, is_mask=False)
+        mask = self.preprocess(mask, self.scale, is_mask=True)
+        
         #print("mask shape:",mask.shape)
         #print("img shape:", img.shape)
         
