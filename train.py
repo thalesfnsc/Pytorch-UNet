@@ -17,12 +17,9 @@ from evaluate import evaluate
 from unet import UNet
 
 
-
 dir_img = Path('/content/drive/MyDrive/U-net/imgs')
 dir_mask = Path('/content/drive/MyDrive/U-net/masks')
 dir_checkpoint = Path('/content/drive/MyDrive/U-net/Checkpoints')
-
-
 
 def train_net(net,
               device,
@@ -31,7 +28,7 @@ def train_net(net,
               learning_rate: float = 1e-5,
               val_percent: float = 0.1,
               save_checkpoint: bool = True,
-              img_scale: float = 0.5,
+              img_scale: float = 0.2,
               amp: bool = False):
     # 1. Create dataset
     try:
@@ -46,7 +43,7 @@ def train_net(net,
 
     # 3. Create data loaders
     loader_args = dict(batch_size=batch_size, num_workers=4, pin_memory=True)
-    train_loader = DataLoader(train_set, shuffle=True, **loader_args)
+    train_loader = DataLoader(train_set, shuffle=False, **loader_args)
     val_loader = DataLoader(val_set, shuffle=False, drop_last=True, **loader_args)
 
     # (Initialize logging)
@@ -89,10 +86,13 @@ def train_net(net,
                     'the images are loaded correctly.'
 
                 images = images.to(device=device, dtype=torch.float32)
-                true_masks = true_masks.to(device=device, dtype=torch.long)
+                true_masks = true_masks.to(device=device, dtype=torch.float32)
 
                 with torch.cuda.amp.autocast(enabled=amp):
                     masks_pred = net(images)
+                    masks_pred = torch.transpose(masks_pred,2,3)
+                    print(masks_pred.shape)
+                    print(true_masks.shape)
                     loss = criterion(masks_pred, true_masks) \
                            + dice_loss(F.softmax(masks_pred, dim=1).float(),
                                        F.one_hot(true_masks, net.n_classes).permute(0, 3, 1, 2).float(),
@@ -133,7 +133,7 @@ def train_net(net,
                             'images': wandb.Image(images[0].cpu()),
                             'masks': {
                                 'true': wandb.Image(true_masks[0].float().cpu()),
-                                'pred': wandb.Image(torch.softmax(masks_pred, dim=1).argmax(dim=1)[0].float().cpu()),
+                                'pred': wandb.Image(masks_pred.argmax(dim=1)[0].float().cpu()),
                             },
                             'step': global_step,
                             'epoch': epoch,
