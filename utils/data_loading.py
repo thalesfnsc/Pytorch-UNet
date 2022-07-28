@@ -81,10 +81,12 @@ class BasicDataset(Dataset):
         '''
         if(mask.shape != img.shape[1:]):
           mask = mask.T
-        '''
-
+        ''' 
+        
         assert img.size== mask.size, \
             f'Image and mask {name} should be the same size, but are {img.size} and {mask.size}'
+
+  
 
         img = self.preprocess(img, self.scale, is_mask=False)
         mask = self.preprocess(mask, self.scale, is_mask=True)
@@ -96,7 +98,9 @@ class BasicDataset(Dataset):
         mask = np.where(mask == 127,1,mask)
         mask = np.where(mask == 255,2,mask)
         #print(img.shape)
-        
+        mask = mask.T
+
+
         return {
             'image': torch.as_tensor(img.copy()).float().contiguous(),
             'mask': torch.as_tensor(mask.copy()).long().contiguous()
