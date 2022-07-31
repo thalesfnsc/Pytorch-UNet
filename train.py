@@ -84,15 +84,13 @@ def train_net(net,
                     f'Network has been defined with {net.n_channels} input channels, ' \
                     f'but loaded images have {images.shape[1]} channels. Please check that ' \
                     'the images are loaded correctly.'
-
+                
                 images = images.to(device=device, dtype=torch.float32)
-                true_masks = true_masks.to(device=device, dtype=torch.float32)
-
+                true_masks = true_masks.to(device=device, dtype=torch.long)
+                
                 with torch.cuda.amp.autocast(enabled=amp):
                     masks_pred = net(images)
-                    masks_pred = torch.transpose(masks_pred,2,3)
-                    print(masks_pred.shape)
-                    print(true_masks.shape)
+                   
                     loss = criterion(masks_pred, true_masks) \
                            + dice_loss(F.softmax(masks_pred, dim=1).float(),
                                        F.one_hot(true_masks, net.n_classes).permute(0, 3, 1, 2).float(),
