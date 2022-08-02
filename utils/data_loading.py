@@ -62,13 +62,31 @@ class BasicDataset(Dataset):
         assert len(mask_file) == 1, f'Either no mask or multiple masks found for the ID {name}: {mask_file}'
         mask = self.load(mask_file[0])
         img = self.load(img_file[0])
+        
 
-        #assert img.size == mask.size, \
-        #    f'Image and mask {name} should be the same size, but are {img.size} and {mask.size}'
+
+        assert img.size == mask.size, \
+            f'Image and mask {name} should be the same size, but are {img.size} and {mask.size}'
 
         img = self.preprocess(img, self.scale, is_mask=False)
         mask = self.preprocess(mask, self.scale, is_mask=True)
         
+        '''
+         Correct preprocess example:
+         Mask shape :(384,512)
+         Image shape: (3,384,512)
+
+         Incorrect preprocess example:
+         Mask shape : (384,512,3)
+         Image shape: (3,384,512)
+         '''
+
+
+        
+        print('Mask shape:', mask.shape)
+        print('Image shape:',img.shape)
+
+
         if(mask.shape != img.shape[1:]):
             mask = mask.T
 
