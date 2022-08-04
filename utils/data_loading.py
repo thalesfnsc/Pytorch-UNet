@@ -18,6 +18,17 @@ class BasicDataset(Dataset):
         self.mask_suffix = mask_suffix
 
         self.ids = [splitext(file)[0] for file in listdir(images_dir) if not file.startswith('.')]
+        
+        ##
+        for i in self.ids:
+          if 'Coffee' in i:
+            self.ids.remove(i)
+             
+        for i in self.ids:
+          if 'Coffee_1' in i:
+            self.ids.remove(i)
+        ## 
+        
         if not self.ids:
             raise RuntimeError(f'No input file found in {images_dir}, make sure you put your images there')
         logging.info(f'Creating dataset with {len(self.ids)} examples')
@@ -83,8 +94,8 @@ class BasicDataset(Dataset):
 
 
         
-        print('Mask shape:', mask.shape)
-        print('Image shape:',img.shape)
+        #print('Mask shape:', mask.shape)
+        #print('Image shape:',img.shape)
 
 
         if(mask.shape != img.shape[1:]):
