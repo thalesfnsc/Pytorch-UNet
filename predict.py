@@ -12,6 +12,7 @@ from matplotlib import pyplot as plt
 from utils.data_loading import BasicDataset
 from unet import UNet
 from utils.utils import plot_img_and_mask
+import pickle
 
 def predict_img(net,
                 full_img,
@@ -42,7 +43,7 @@ def predict_img(net,
     if net.n_classes == 1:
         return (full_mask > out_threshold).numpy()
     else:
-        return F.one_hot(full_mask.argmax(dim=0), net.n_classes).permute(2, 0, 1).numpy()
+        return F.one_hot(full_mask.argmax(dim=0), net.n_classes).permute(2, 0, 1).numpy(),output
 
 
 def get_args():
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     in_files = args.input
     out_files = get_output_filenames(args)
 
-    net = UNet(n_channels=3, n_classes=3, bilinear=args.bilinear)
+    net = UNet(n_channels=3, n_classes=2, bilinear=args.bilinear)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Loading model {args.model}')
@@ -97,11 +98,14 @@ if __name__ == '__main__':
         logging.info(f'\nPredicting image {filename} ...')
         img = Image.open(filename)
 
-        mask = predict_img(net=net,
+        mask,output = predict_img(net=net,
                            full_img=img,
                            scale_factor=args.scale,
                            out_threshold=args.mask_threshold,
                            device=device)
+
+        with open(f'/content/output{args.iterator}.pickle','wb') as file:
+          pickle.dump({"output":output},file)
 
         if not args.no_save:
             out_filename = out_files[i]
@@ -112,5 +116,5 @@ if __name__ == '__main__':
         if args.viz:
             logging.info(f'Visualizing results for image {filename}, close to continue...')
             mask = mask_to_image(mask)
-            mask.save(f'/content/drive/MyDrive/U-net/Predict/Mask predict/{args.iterator}_pred.png')
+            mask.save(f'/content/drive/MyDrive/U-net/Predict/Mask predict 2 classes/{args.iterator}_pred.png')
             #plot_img_and_mask(img, mask)
