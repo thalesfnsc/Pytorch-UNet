@@ -104,7 +104,7 @@ if __name__ == '__main__':
                            out_threshold=args.mask_threshold,
                            device=device)
 
-        with open(f'/content/output{args.iterator}.pickle','wb') as file:
+        with open(f'/content/drive/MyDrive/U-net/Predict/Predict 2 classes tensor/{args.iterator}.pickle','wb') as file:
           pickle.dump({"output":output},file)
 
         if not args.no_save:
