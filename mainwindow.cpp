@@ -49,7 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QString dir = qApp->applicationDirPath();
         QString dirdatabase = dir+"/database/database.db";
 
-        QString dirdriver = dir+"/sqldrivers/";
+        QStrin. g dirdriver = dir+"/sqldrivers/";
         QCoreApplication::addLibraryPath(dirdriver);
 
         database = QSqlDatabase::addDatabase("QSQLITE");
@@ -167,6 +167,7 @@ static void findObjects(){
 
     //draw(image, contours);
 
+    // countours = list with all contours in the image
     for(size_t i = 0; i < contours.size(); i++){
         double auxper = arcLength(contours[i], true);
         approxPolyDP(contours[i], approx, auxper*0.02, true);
