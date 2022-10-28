@@ -50,7 +50,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Predict masks from input images')
     parser.add_argument('--model', '-m', default='MODEL.pth', metavar='FILE',
                         help='Specify the file in which the model is stored')
-    parser.add_argument('--input', '-i', metavar='INPUT', nargs='+', help='Filenames of input images', required=True)
+    parser.add_argument('--input', '-i', metavar='INPUT', nargs='+', help='Filenames of input images', required=True,type=str)
     parser.add_argument('--output', '-o', metavar='OUTPUT', nargs='+', help='Filenames of output images')
     parser.add_argument('--viz', '-v', action='store_true',
                         help='Visualize the images as they are processed')
@@ -61,6 +61,7 @@ def get_args():
                         help='Scale factor for the input images')
     parser.add_argument('--bilinear', action='store_true', default=False, help='Use bilinear upsampling')
     parser.add_argument('--iterator','-it',type=str)
+    parser.add_argument('--save_dir','-sv',type=str)
     return parser.parse_args()
 
 
@@ -96,6 +97,7 @@ if __name__ == '__main__':
     logging.info('Model loaded!')
     for i, filename in enumerate(in_files):
         logging.info(f'\nPredicting image {filename} ...')
+        print(filename)
         img = Image.open(filename)
 
         mask,output = predict_img(net=net,
@@ -104,17 +106,16 @@ if __name__ == '__main__':
                            out_threshold=args.mask_threshold,
                            device=device)
 
-        with open(f'/content/drive/MyDrive/U-net/Predict/Predict 2 classes tensor/{args.iterator}.pickle','wb') as file:
-          pickle.dump({"output":output},file)
+        #with open(f'/content/drive/MyDrive/U-net/Predict/Predict 2 classes tensor/{args.iterator}.pickle','wb') as file:
+        #  pickle.dump({"output":output},file)
 
         if not args.no_save:
             out_filename = out_files[i]
             result = mask_to_image(mask)
-            result.save(out_filename)
+            result.save(f'{args.save_dir}/{args.iterator}_pred.jpeg')
             logging.info(f'Mask saved to {out_filename}')
 
         if args.viz:
             logging.info(f'Visualizing results for image {filename}, close to continue...')
             mask = mask_to_image(mask)
-            mask.save(f'/content/drive/MyDrive/U-net/Predict/Mask predict 2 classes/{args.iterator}_pred.png')
-            #plot_img_and_mask(img, mask)
+            plot_img_and_mask(img, mask)
