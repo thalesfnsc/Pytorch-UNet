@@ -97,7 +97,6 @@ if __name__ == '__main__':
     logging.info('Model loaded!')
     for i, filename in enumerate(in_files):
         logging.info(f'\nPredicting image {filename} ...')
-        print(filename)
         img = Image.open(filename)
 
         mask,output = predict_img(net=net,
